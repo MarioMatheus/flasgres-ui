@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Home from "./components/Home.vue";
+import Home from "@/components/Home.vue";
 
 @Component({
   components: {
@@ -25,5 +25,39 @@ export default class App extends Vue {}
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+button {
+  min-width: 100px;
+  min-height: 15px;
+  border-radius: 0;
+}
+
+.top4 {
+  margin-top: 4px;
+}
+
+.top8 {
+  margin-top: 8px;
+}
+
+.top12 {
+  margin-top: 12px;
+}
+
+.filled {
+  background-color: #41b883;
+  color: white;
+}
+
+.unfilled {
+  border: none;
+  background-color: transparent;
+  color: #41b883;
+}
+
+.p-error {
+  color: red;
+  font-size: 0.8em;
 }
 </style>

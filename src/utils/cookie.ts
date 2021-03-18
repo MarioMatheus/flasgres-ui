@@ -12,3 +12,7 @@ export const getCookie = (name: string): string | null => {
       })[0] || null
   );
 };
+
+export const removeCookie = (name: string): void => {
+  document.cookie = name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+};

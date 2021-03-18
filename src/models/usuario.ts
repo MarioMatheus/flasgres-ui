@@ -1,7 +1,7 @@
 import Endereco from "./endereco";
 
 export default interface Usuario {
-  id: bigint;
+  id: number;
   nome: string;
   email: string;
   cpf: string;

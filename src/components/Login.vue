@@ -3,14 +3,13 @@
     <input type="text" v-model="login" placeholder="Email, CPF ou PIS" />
     <p class="p-error">{{ loginError }}</p>
     <input
-      class="top4"
       type="password"
       v-model="senha"
       placeholder="Senha"
       autocomplete="on"
     />
     <p class="p-error">{{ senhaError }}</p>
-    <button class="top12 filled" @click="entrar">Entrar</button>
+    <button class="top8 filled" @click="entrar">Entrar</button>
     <br />
     <button class="top8 unfilled" @click="cadastrar">Quero me cadastrar</button>
   </div>
@@ -18,8 +17,8 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import api from "../utils/api";
-import Usuario from "../models/usuario";
+import api from "@/utils/api";
+import Usuario from "@/models/usuario";
 
 @Component
 export default class Login extends Vue {
@@ -54,11 +53,11 @@ export default class Login extends Vue {
       return;
     }
     try {
-      const usuario = await api.post<Usuario>("/auth/login", {
+      const res = await api.post<Usuario>("/auth/login", {
         login: this.login,
         senha: this.senha
       });
-      this.$emit("signin", usuario.data.nome);
+      this.$emit("signin", res.data);
     } catch (error) {
       if (!error.response) {
         this.senhaError = "Conexão não encontrada";
@@ -80,39 +79,5 @@ input {
   min-width: 200px;
   min-height: 20px;
   border-radius: 6px;
-}
-
-button {
-  min-width: 100px;
-  min-height: 15px;
-  border-radius: 0;
-}
-
-.top4 {
-  margin-top: 4px;
-}
-
-.top8 {
-  margin-top: 8px;
-}
-
-.top12 {
-  margin-top: 12px;
-}
-
-.filled {
-  background-color: #41b883;
-  color: white;
-}
-
-.unfilled {
-  border: none;
-  background-color: transparent;
-  color: #41b883;
-}
-
-.p-error {
-  color: red;
-  font-size: 0.8em;
 }
 </style>
