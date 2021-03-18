@@ -2,7 +2,7 @@
   <div>
     <p>{{ msg }}</p>
     <Login v-if="!usuario.id" @signin="signin" />
-    <Profile v-if="usuario.id" @logout="logout" />
+    <Perfil v-if="usuario.id" @logout="logout" />
   </div>
 </template>
 
@@ -10,14 +10,14 @@
 import Usuario from "@/models/usuario";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Login from "./Login.vue";
-import Profile from "./Profile.vue";
+import Perfil from "./Perfil.vue";
 import { getCookie } from "../utils/cookie";
 import { parseJwt } from "../utils/jwt";
 
 @Component({
   components: {
     Login,
-    Profile
+    Perfil
   }
 })
 export default class Home extends Vue {

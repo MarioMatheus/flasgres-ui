@@ -11,7 +11,16 @@
     <p class="p-error">{{ senhaError }}</p>
     <button class="top8 filled" @click="entrar">Entrar</button>
     <br />
-    <button class="top8 unfilled" @click="cadastrar">Quero me cadastrar</button>
+    <button class="top8 unfilled" @click="exibirCadastro = true">
+      Quero me cadastrar
+    </button>
+    <UsuarioForm
+      v-if="exibirCadastro"
+      habilitarSenha
+      salvarButtonText="Cadastrar"
+      @salvar="cadastrarUsuario"
+      @cancelar="exibirCadastro = false"
+    />
   </div>
 </template>
 
@@ -19,13 +28,18 @@
 import { Component, Vue } from "vue-property-decorator";
 import api from "@/utils/api";
 import Usuario from "@/models/usuario";
+import UsuarioForm from "./UsuarioForm.vue";
 
-@Component
+@Component({
+  components: { UsuarioForm }
+})
 export default class Login extends Vue {
   login = "";
   senha = "";
   loginError = "";
   senhaError = "";
+
+  exibirCadastro = false;
 
   validarFormulario() {
     this.loginError = "";
@@ -68,8 +82,9 @@ export default class Login extends Vue {
     }
   }
 
-  cadastrar() {
-    console.log(`Cadastrar`);
+  cadastrarUsuario(usuario: Usuario) {
+    this.exibirCadastro = false;
+    console.log(usuario);
   }
 }
 </script>

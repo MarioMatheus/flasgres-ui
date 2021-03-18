@@ -50,6 +50,11 @@ button {
   color: white;
 }
 
+.filled:disabled {
+  background-color: #41b88394;
+  color: white;
+}
+
 .unfilled {
   border: none;
   background-color: transparent;
