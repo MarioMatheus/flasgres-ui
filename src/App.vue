@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
+    <p v-if="loading">Carregando</p>
     <Home grettings="Olá" />
   </div>
 </template>
@@ -14,7 +15,13 @@ import Home from "@/components/Home.vue";
     Home
   }
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  static loading = false;
+
+  get loading(): boolean {
+    return App.loading;
+  }
+}
 </script>
 
 <style>
