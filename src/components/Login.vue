@@ -66,12 +66,14 @@ export default class Login extends Vue {
     if (!this.validarFormulario()) {
       return;
     }
+    this.$loading = true;
     try {
       const res = await api.post<Usuario>("/auth/login", {
         login: this.login,
         senha: this.senha
       });
       this.$emit("signin", res.data);
+      this.$loading = false;
     } catch (error) {
       if (!error.response) {
         this.senhaError = "Conexão não encontrada";
@@ -79,12 +81,21 @@ export default class Login extends Vue {
         this.senhaError =
           error.response.data?.description ?? "Erro desconhecido";
       }
+      this.$loading = false;
     }
   }
 
-  cadastrarUsuario(usuario: Usuario) {
+  async cadastrarUsuario(usuario: Usuario) {
     this.exibirCadastro = false;
-    console.log(usuario);
+    this.$loading = true;
+    try {
+      const res = await api.post<Usuario>("/usuario", usuario);
+      this.$emit("registro", res.data);
+      this.$loading = false;
+    } catch (error) {
+      this.senhaError = "Erro ao registrar novo usuário";
+      this.$loading = false;
+    }
   }
 }
 </script>

@@ -1,17 +1,40 @@
 <template>
   <div>
-    <button class="filled">Editar dados</button>
+    <button class="filled" @click="exibirCadastro = true">Editar dados</button>
     <br />
     <button class="unfilled top8" @click="logout">Sair</button>
+    <UsuarioForm
+      v-if="exibirCadastro"
+      :usuario="usuario"
+      @salvar="atualizarUsuario"
+      @cancelar="exibirCadastro = false"
+    />
   </div>
 </template>
 
 <script lang="ts">
+import Usuario from "@/models/usuario";
+import api from "@/utils/api";
 import { removeCookie } from "@/utils/cookie";
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import UsuarioForm from "./UsuarioForm.vue";
 
-@Component
+@Component({
+  components: { UsuarioForm }
+})
 export default class Perfil extends Vue {
+  @Prop() usuario!: Usuario;
+
+  exibirCadastro = false;
+
+  async atualizarUsuario(usuario: Usuario) {
+    this.exibirCadastro = false;
+    this.$loading = true;
+    const res = await api.put<Usuario>(`/usuario/${this.usuario.id}`, usuario);
+    this.$emit("atualizacao", res.data);
+    this.$loading = false;
+  }
+
   logout() {
     removeCookie("session");
     this.$emit("logout");

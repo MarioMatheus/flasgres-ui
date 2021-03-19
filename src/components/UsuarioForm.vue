@@ -14,21 +14,21 @@
           </div>
           <div class="field">
             <label> CPF </label>
-            <input type="text" v-model="data.cpf" />
+            <input type="number" v-model="data.cpf" />
           </div>
           <div class="field">
             <label> PIS </label>
-            <input type="text" />
+            <input type="number" v-model="data.pis" />
           </div>
           <div class="field field-hidden">
             <label>Hidden</label>
             <input type="text" />
           </div>
-          <div class="field">
+          <div class="field" v-if="habilitarSenha">
             <label> Senha* </label>
             <input type="password" v-model="data.senha" />
           </div>
-          <div class="field">
+          <div class="field" v-if="habilitarSenha">
             <label> Confirmar Senha* </label>
             <input type="password" v-model="senhaValidada" />
           </div>
@@ -37,7 +37,7 @@
           <h5>Endereço</h5>
           <div class="field">
             <label> CEP* </label>
-            <input type="text" v-model="data.endereco.cep" />
+            <input type="number" v-model="data.endereco.cep" />
           </div>
           <div class="field">
             <label> Logradouro* </label>

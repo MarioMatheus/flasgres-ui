@@ -1,8 +1,13 @@
 <template>
   <div>
     <p>{{ msg }}</p>
-    <Login v-if="!usuario.id" @signin="signin" />
-    <Perfil v-if="usuario.id" @logout="logout" />
+    <Login v-if="!usuario.id" @signin="signin" @registro="signin" />
+    <Perfil
+      v-if="usuario.id"
+      :usuario="usuario"
+      @atualizacao="signin"
+      @logout="logout"
+    />
   </div>
 </template>
 
@@ -13,6 +18,7 @@ import Login from "./Login.vue";
 import Perfil from "./Perfil.vue";
 import { getCookie } from "../utils/cookie";
 import { parseJwt } from "../utils/jwt";
+import api from "@/utils/api";
 
 @Component({
   components: {
@@ -28,19 +34,21 @@ export default class Home extends Vue {
     return `${this.grettings} ${this.usuario?.nome || "Visitante"}`;
   }
 
-  mounted() {
+  async mounted() {
     const session = getCookie("session");
     if (session) {
       const payload = parseJwt(session);
-      this.usuario = {
-        id: payload.id as number,
-        nome: payload.username as string
-      };
+      this.consultarUsuario(payload.id as number);
     }
   }
 
+  async consultarUsuario(id: number) {
+    const res = await api.get<Usuario>(`/usuario/${id}`);
+    this.usuario = res.data;
+  }
+
   signin(usuario: Usuario) {
-    this.usuario = usuario;
+    this.consultarUsuario(usuario.id);
   }
 
   logout() {
