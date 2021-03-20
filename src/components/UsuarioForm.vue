@@ -76,6 +76,10 @@
       <button class="top8 unfilled last" @click="$emit('cancelar')">
         Cancelar
       </button>
+      <br />
+      <button class="top12 filled last btn-red" @click="$emit('deletar')">
+        Deletar Conta
+      </button>
     </div>
   </div>
 </template>
@@ -238,5 +242,9 @@ export default class UsuarioForm extends Vue {
 
 .field-hidden input {
   border-color: transparent;
+}
+
+.btn-red {
+  background-color: red;
 }
 </style>

@@ -8,6 +8,7 @@
       :usuario="usuario"
       @salvar="atualizarUsuario"
       @cancelar="exibirCadastro = false"
+      @deletar="deletarConta"
     />
   </div>
 </template>
@@ -38,6 +39,14 @@ export default class Perfil extends Vue {
   logout() {
     removeCookie("session");
     this.$emit("logout");
+  }
+
+  async deletarConta() {
+    this.exibirCadastro = false;
+    this.$loading = true;
+    await api.delete<Usuario>(`/usuario/${this.usuario.id}`);
+    this.logout();
+    this.$loading = false;
   }
 }
 </script>
