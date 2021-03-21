@@ -8,4 +8,5 @@ export default interface Usuario {
   cpf: string;
   pis: string;
   endereco: Endereco;
+  oauth: boolean;
 }

@@ -37,6 +37,9 @@ export default class Perfil extends Vue {
   }
 
   logout() {
+    if (this.$oauth.isAuthenticated) {
+      this.$oauth.logout();
+    }
     removeCookie("session");
     this.$emit("logout");
   }

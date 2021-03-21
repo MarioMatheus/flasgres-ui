@@ -16,9 +16,6 @@ import Usuario from "@/models/usuario";
 import { Component, Prop, Vue } from "vue-property-decorator";
 import Login from "./Login.vue";
 import Perfil from "./Perfil.vue";
-import { getCookie } from "../utils/cookie";
-import { parseJwt } from "../utils/jwt";
-import api from "@/utils/api";
 
 @Component({
   components: {
@@ -29,26 +26,22 @@ import api from "@/utils/api";
 export default class Home extends Vue {
   @Prop() grettings!: string;
   private usuario: Partial<Usuario> = {};
+  private defaultName = "";
 
   get msg(): string {
-    return `${this.grettings} ${this.usuario?.nome || "Visitante"}`;
+    return `${this.grettings} ${this.usuario?.nome || this.defaultName}`;
   }
 
-  async mounted() {
-    const session = getCookie("session");
-    if (session) {
-      const payload = parseJwt(session);
-      this.consultarUsuario(payload.id as number);
-    }
+  mounted() {
+    this.$oauth.addCallback(Home.name, isAuthenticated => {
+      if (!isAuthenticated) {
+        this.defaultName = "Visitante";
+      }
+    });
   }
 
-  async consultarUsuario(id: number) {
-    const res = await api.get<Usuario>(`/usuario/${id}`);
-    this.usuario = res.data;
-  }
-
-  signin(usuario: Usuario) {
-    this.consultarUsuario(usuario.id);
+  async signin(usuario: Usuario) {
+    this.usuario = usuario;
   }
 
   logout() {

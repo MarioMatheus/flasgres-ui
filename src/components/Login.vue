@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="!authInitLoading">
     <input type="text" v-model="login" placeholder="Email, CPF ou PIS" />
     <p class="p-error">{{ loginError }}</p>
     <input
@@ -14,9 +14,13 @@
     <button class="top8 unfilled" @click="exibirCadastro = true">
       Quero me cadastrar
     </button>
+    <button class="top12 unfilled" @click="oauthLogin">
+      Entrar com Google/Github
+    </button>
     <UsuarioForm
       v-if="exibirCadastro"
-      habilitarSenha
+      :usuario="usuario"
+      :habilitarSenha="!usuario.oauth"
       salvarButtonText="Cadastrar"
       @salvar="cadastrarUsuario"
       @cancelar="exibirCadastro = false"
@@ -29,6 +33,9 @@ import { Component, Vue } from "vue-property-decorator";
 import api from "@/utils/api";
 import Usuario from "@/models/usuario";
 import UsuarioForm from "./UsuarioForm.vue";
+import { OAuthUser } from "@/utils/plugins/oauth";
+import { createCookie, getCookie } from "@/utils/cookie";
+import { parseJwt } from "@/utils/jwt";
 
 @Component({
   components: { UsuarioForm }
@@ -39,7 +46,54 @@ export default class Login extends Vue {
   loginError = "";
   senhaError = "";
 
-  exibirCadastro = false;
+  private usuario: Partial<Usuario> = {};
+  private exibirCadastro = false;
+  private authInitLoading = true;
+
+  async mounted() {
+    this.$loading = true;
+    this.$oauth.addCallback(Login.name, async (isAuthenticated, ctx) => {
+      try {
+        if (ctx === "popup") {
+          this.$loading = true;
+        }
+        if (isAuthenticated) {
+          await this.consultarUsuarioOAuth(this.$oauth.user);
+        } else {
+          await this.consultarUsuario();
+        }
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.authInitLoading = false;
+        this.$loading = false;
+      }
+    });
+  }
+
+  private async consultarUsuario() {
+    const session = getCookie("session");
+    if (session && !session.startsWith("oauth")) {
+      const payload = parseJwt(session);
+      const res = await api.get<Usuario>(`/usuario/${payload.id}`);
+      this.$emit("signin", res.data);
+    }
+  }
+
+  private async consultarUsuarioOAuth(usuario: Partial<OAuthUser>) {
+    const res = await api.get<{ result: boolean }>(
+      `/usuario/oauth-check/${usuario.email}`
+    );
+    if (res.data.result === false) {
+      this.usuario = { nome: usuario.name, email: usuario.email, oauth: true };
+      this.exibirCadastro = true;
+    } else {
+      const token = (await this.$oauth.getIdTokenClaims())?.__raw;
+      createCookie("session", `oauth ${token}`);
+      const res = await api.get<Usuario>(`/usuario/oauth/${usuario.email}`);
+      this.$emit("signin", res.data);
+    }
+  }
 
   validarFormulario() {
     this.loginError = "";
@@ -89,13 +143,20 @@ export default class Login extends Vue {
     this.exibirCadastro = false;
     this.$loading = true;
     try {
-      const res = await api.post<Usuario>("/usuario", usuario);
+      const res = await api.post<Usuario>("/usuario", {
+        ...usuario,
+        oauth: usuario.oauth ?? false
+      });
       this.$emit("registro", res.data);
       this.$loading = false;
     } catch (error) {
       this.senhaError = "Erro ao registrar novo usuário";
       this.$loading = false;
     }
+  }
+
+  oauthLogin() {
+    this.$oauth.loginWithPopup({ display: "popup" });
   }
 }
 </script>
