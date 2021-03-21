@@ -77,7 +77,11 @@
         Cancelar
       </button>
       <br />
-      <button class="top12 filled last btn-red" @click="$emit('deletar')">
+      <button
+        v-if="habilitarDelecao"
+        class="top12 filled last btn-red"
+        @click="$emit('deletar')"
+      >
         Deletar Conta
       </button>
     </div>
@@ -93,6 +97,7 @@ export default class UsuarioForm extends Vue {
   @Prop() readonly usuario?: Usuario;
   @Prop() readonly salvarButtonText?: string;
   @Prop({ type: Boolean, default: false }) readonly habilitarSenha!: boolean;
+  @Prop({ type: Boolean, default: false }) readonly habilitarDelecao!: boolean;
 
   showErrors = false;
   errors: string[] = [];
@@ -126,13 +131,14 @@ export default class UsuarioForm extends Vue {
     }
 
     const existeCampoEnderecoVazio =
+      (this.data?.endereco ?? {}) === {} ||
       Object.entries(this.data?.endereco ?? {})
         .filter(entry => entry[0] !== "complemento")
-        .findIndex(
+        .some(
           entry =>
             (typeof entry[1] === "string" && !entry[1]) ||
             (typeof entry[1] === "number" && entry[1] < 0)
-        ) > -1;
+        );
 
     if (existeCampoEnderecoVazio) {
       valid = false;
@@ -219,7 +225,15 @@ export default class UsuarioForm extends Vue {
 .container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  /* justify-content: space-around; */
+  overflow: auto;
+}
+
+@media (max-width: 800px) {
+  .container {
+    flex-direction: column;
+    max-height: 400px;
+  }
 }
 
 .container .section {

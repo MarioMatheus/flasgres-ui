@@ -1,10 +1,12 @@
 <template>
   <div>
+    <p class="p-error">{{ error }}</p>
     <button class="filled" @click="exibirCadastro = true">Editar dados</button>
     <br />
     <button class="unfilled top8" @click="logout">Sair</button>
     <UsuarioForm
       v-if="exibirCadastro"
+      habilitarDelecao
       :usuario="usuario"
       @salvar="atualizarUsuario"
       @cancelar="exibirCadastro = false"
@@ -27,29 +29,49 @@ export default class Perfil extends Vue {
   @Prop() usuario!: Usuario;
 
   exibirCadastro = false;
+  error = "";
 
   async atualizarUsuario(usuario: Usuario) {
+    this.error = "";
     this.exibirCadastro = false;
     this.$loading = true;
-    const res = await api.put<Usuario>(`/usuario/${this.usuario.id}`, usuario);
-    this.$emit("atualizacao", res.data);
-    this.$loading = false;
+    try {
+      const res = await api.put<Usuario>(
+        `/usuario/${this.usuario.id}`,
+        usuario
+      );
+      this.$emit("atualizacao", res.data);
+    } catch (error) {
+      console.log(error);
+      this.error = "Erro ao atualizar usuário";
+    } finally {
+      this.$loading = false;
+    }
   }
 
   logout() {
-    if (this.$oauth.isAuthenticated) {
-      this.$oauth.logout();
-    }
     removeCookie("session");
-    this.$emit("logout");
+    if (this.$oauth.isAuthenticated) {
+      this.$loading = true;
+      this.$oauth.logout();
+    } else {
+      this.$emit("logout");
+    }
   }
 
   async deletarConta() {
+    this.error = "";
     this.exibirCadastro = false;
     this.$loading = true;
-    await api.delete<Usuario>(`/usuario/${this.usuario.id}`);
-    this.logout();
-    this.$loading = false;
+    try {
+      await api.delete<Usuario>(`/usuario/${this.usuario.id}`);
+      this.logout();
+    } catch (error) {
+      console.log(error);
+      this.error = "Erro ao deletar conta";
+    } finally {
+      this.$loading = false;
+    }
   }
 }
 </script>

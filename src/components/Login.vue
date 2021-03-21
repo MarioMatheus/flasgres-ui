@@ -14,7 +14,7 @@
     <button class="top8 unfilled" @click="exibirCadastro = true">
       Quero me cadastrar
     </button>
-    <button class="top12 unfilled" @click="oauthLogin">
+    <button class="top20 unfilled" @click="oauthLogin">
       Entrar com Google/Github
     </button>
     <UsuarioForm
@@ -52,7 +52,7 @@ export default class Login extends Vue {
 
   async mounted() {
     this.$loading = true;
-    this.$oauth.addCallback(Login.name, async (isAuthenticated, ctx) => {
+    this.$oauth.addCallback("Login", async (isAuthenticated, ctx) => {
       try {
         if (ctx === "popup") {
           this.$loading = true;
@@ -64,6 +64,7 @@ export default class Login extends Vue {
         }
       } catch (error) {
         console.log(error);
+        this.senhaError = "Falha na autenticação";
       } finally {
         this.authInitLoading = false;
         this.$loading = false;
@@ -147,6 +148,10 @@ export default class Login extends Vue {
         ...usuario,
         oauth: usuario.oauth ?? false
       });
+      if (res.data?.oauth ?? false) {
+        const token = (await this.$oauth.getIdTokenClaims())?.__raw;
+        createCookie("session", `oauth ${token}`);
+      }
       this.$emit("registro", res.data);
       this.$loading = false;
     } catch (error) {

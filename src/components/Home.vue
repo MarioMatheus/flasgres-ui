@@ -33,7 +33,7 @@ export default class Home extends Vue {
   }
 
   mounted() {
-    this.$oauth.addCallback(Home.name, isAuthenticated => {
+    this.$oauth.addCallback("Home", isAuthenticated => {
       if (!isAuthenticated) {
         this.defaultName = "Visitante";
       }

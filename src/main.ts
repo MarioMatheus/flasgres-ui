@@ -1,6 +1,6 @@
 import Vue from "vue";
 import App from "./App.vue";
-import "./registerServiceWorker";
+// import "./registerServiceWorker";
 import VLoading from "./utils/plugins/loading";
 import { Auth0Plugin } from "./utils/plugins/oauth";
 import { domain, clientId } from "../auth_config.json";

@@ -1,7 +1,6 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png" />
-    <p v-if="loading">Carregando</p>
     <Home grettings="Olá" />
   </div>
 </template>
@@ -15,13 +14,7 @@ import Home from "@/components/Home.vue";
     Home
   }
 })
-export default class App extends Vue {
-  static loading = false;
-
-  get loading(): boolean {
-    return App.loading;
-  }
-}
+export default class App extends Vue {}
 </script>
 
 <style>
@@ -37,7 +30,21 @@ export default class App extends Vue {
 button {
   min-width: 100px;
   min-height: 15px;
+  max-width: 250px;
+  width: 90%;
+  height: 4vh;
   border-radius: 0;
+  margin: auto;
+}
+
+input {
+  min-width: 100px;
+  min-height: 15px;
+  max-width: 300px;
+  width: 80%;
+  height: 4vh;
+  border-radius: 0;
+  margin: auto;
 }
 
 .top4 {
@@ -50,6 +57,10 @@ button {
 
 .top12 {
   margin-top: 12px;
+}
+
+.top20 {
+  margin-top: 20px;
 }
 
 .filled {
