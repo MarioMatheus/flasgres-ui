@@ -164,7 +164,10 @@ class OAuth extends Vue {
   }
   /** Logs the user out and removes their session on the authorization server */
   logout(o?: LogoutOptions) {
-    return this.auth0Client?.logout(o);
+    return this.auth0Client?.logout({
+      ...o,
+      returnTo: process.env.VUE_APP_DOMAIN || `http://127.0.0.1:5000`
+    });
   }
 }
 
